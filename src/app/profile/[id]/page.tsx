@@ -1,6 +1,7 @@
 import React from "react";
 
-function userProfile({ params }: any) {
+async function userProfile({ params }: any) {
+  const {id} = await params;
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -9,7 +10,7 @@ function userProfile({ params }: any) {
           Profile page{" "}
           <span className="p-2 rounded bg-orange-500 text-black">
             {" "}
-            {params.id}
+            {id}
           </span>{" "}
         </h2>
       </div>

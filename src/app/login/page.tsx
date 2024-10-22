@@ -1,9 +1,10 @@
 "use client"; // this decorator is used to tell the compiler that this file is a client file and it should be compiled to a client file
 
-import React, { use, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 function Login() {
   const [user, setUser] = useState({
@@ -11,9 +12,36 @@ function Login() {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+
   const router = useRouter();
 
-  const onLogin = async () => {};
+  const onLogin = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.post("/api/users/login", user);
+      if (response.data.success) {
+        // localStorage.setItem("token", response.data.token);
+        toast.success(response.data.message);
+        router.push("/profile");
+      } 
+
+    } catch (error:any) {
+      toast.error(error.response.data.error);
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user.email && user.password) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
+  }, [user]);
 
   return (
     <>
@@ -127,10 +155,12 @@ function Login() {
               <div className="mt-12">
                 <button
                   type="button"
-                  className="w-max shadow-xl py-3 px-6 text-sm text-gray-800 font-semibold rounded-md bg-transparent bg-yellow-400 hover:bg-yellow-500 focus:outline-none"
+                  className="w-max shadow-xl py-3 px-6 text-sm text-gray-800 font-semibold rounded-md bg-transparent bg-yellow-400 
+                  hover:bg-yellow-500 focus:outline-none disabled:bg-yellow-100"
                   onClick={onLogin}
+                  disabled={disabled || loading}
                 >
-                  Login Now
+                  {loading ? "Processing" : "Login Now"}
                 </button>
                 <p className="text-sm text-white mt-8">
                   Already have an account?{" "}

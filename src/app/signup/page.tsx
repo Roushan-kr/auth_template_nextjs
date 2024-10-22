@@ -1,9 +1,10 @@
-"use client"; // this decorator is used to tell the compiler that this file is a client file and it should be compiled to a client file
+"use client"; 
 
-import React, { use, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import toast from 'react-hot-toast';
 
 function Signup() {
   const [user, setUser] = useState({
@@ -12,9 +13,34 @@ function Signup() {
     username: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+
   const router = useRouter();
 
-  const onSignup = async () => {};
+  const onSignup = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post("/api/users/signup", user);
+      if (response.data.success) {
+        toast.success(response.data.message);
+        router.push("/login");
+      }
+    } catch (error:any) {
+      toast.error(error.response.data.error);
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user.email && user.password && user.username) {
+      setButtonDisabled(false);
+    } else {
+      setButtonDisabled(true);
+    }
+  }, [user]);
 
   return (
     <>
@@ -188,10 +214,11 @@ function Signup() {
               <div className="mt-12">
                 <button
                   type="button"
-                  className="w-max shadow-xl py-3 px-6 text-sm text-gray-800 font-semibold rounded-md bg-transparent bg-yellow-400 hover:bg-yellow-500 focus:outline-none"
+                  className="w-max shadow-xl py-3 px-6 text-sm text-gray-800 font-semibold rounded-md bg-transparent bg-yellow-400 hover:bg-yellow-500 focus:outline-none disabled:bg-yellow-100"
                   onClick={onSignup}
+                  disabled={buttonDisabled || loading}
                 >
-                  Register
+                  {loading ? "processing" : "Register"}
                 </button>
                 <p className="text-sm text-white mt-8">
                   Already have an account?{" "}
