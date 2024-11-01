@@ -1,7 +1,7 @@
-"use clinet";
+"use client";
 
 import axios from "axios";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React from "react";
 import toast from "react-hot-toast";
 
@@ -11,7 +11,7 @@ function Profile() {
     try {
       const res = await axios.get("/api/users/logout");
       if (res.data.success) {
-        toast.success(res.data.message);
+        toast.success(res.data.messgae);
         router.push("/login");
       }
     } catch (error: any) {
