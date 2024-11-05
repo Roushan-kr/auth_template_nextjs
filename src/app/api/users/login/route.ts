@@ -30,7 +30,13 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
+    // check if mail is verify or not
+    if(!userExists.isVerfied){
+      return NextResponse.json(
+        { error: "Your need to verify your mail befor login"},
+        { status: 400 }
+      );
+    }
     // Compare password
     const isMatch = await bcryptjs.compare(password, userExists.password);
 

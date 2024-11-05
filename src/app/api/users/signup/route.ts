@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
         sandEmail({ userId: user._id, email: user.email, reson: 'verify' });
         
-        return NextResponse.json({ message: "User created successfully", success: true }, { status: 201 });
+        return NextResponse.json({ message: "User created successfully and verifymail sent to respective email", success: true }, { status: 201 });
 
     } catch (error: any) {
         console.log(error);
