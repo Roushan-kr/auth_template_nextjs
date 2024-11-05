@@ -48,12 +48,16 @@ export async function POST(req: NextRequest) {
             { status: 201 }
         );
     } catch (error: any) {
-        console.error(error);
-        // Handle the error with better type safety
+        // Detailed error handling
+        console.error("Error creating user:", error);
+        
         if (error instanceof Error) {
+            // If the error is an instance of Error, return the message
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
-        return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 });
+
+        // Catch any other unexpected errors
+        return NextResponse.json({ error: 'An unexpected error occurred during user creation' }, { status: 500 });
     }
 }
 
