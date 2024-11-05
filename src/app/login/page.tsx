@@ -25,9 +25,8 @@ function Login() {
         // localStorage.setItem("token", response.data.token);
         toast.success(response.data.message);
         router.push("/profile");
-      } 
-
-    } catch (error:any) {
+      }
+    } catch (error: any) {
       toast.error(error.response.data.error);
       console.log(error);
     } finally {
@@ -35,6 +34,28 @@ function Login() {
     }
   };
 
+  const onReset = async () => {
+    try {
+      setLoading(true);
+      if(!user.email){
+        toast.error("first enter email for reset password")
+        return;
+      }
+      // i wanted to put it saprate but it look mostly when user try to login
+      const response = await axios.post("/api/users/auth/resetpasswd", {
+        email: user.email,
+      });
+      if (response.data.success) {
+        // localStorage.setItem("token", response.data.token);
+        toast.success(response.data.message);
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.error || "Unable to reset password");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     if (user.email && user.password) {
       setDisabled(false);
@@ -163,13 +184,23 @@ function Login() {
                   {loading ? "Processing" : "Login Now"}
                 </button>
                 <p className="text-sm text-white mt-8">
-                  Already have an account?{" "}
+                  Don't have an account?{" "}
                   <Link
                     href="/signup"
                     className="text-yellow-400 font-semibold hover:underline ml-1"
                   >
                     Signup here
                   </Link>
+                </p>
+                <p className="text-sm text-white mt-8">
+                  Wanted to reset account password?
+                  <button
+                    type="button"
+                    className="text-yellow-400 font-semibold hover:underline ml-1"
+                    onClick={onReset}
+                  >
+                    Reset Now
+                  </button>
                 </p>
               </div>
             </form>

@@ -4,7 +4,7 @@ import { User } from "@/models/userModel";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sandEmail } from "@/helper/mailer";
-import { verify } from "crypto";
+
 
 
 connect();
