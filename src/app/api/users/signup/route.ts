@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
             { message: 'User created successfully. Verification email sent.', success: true },
             { status: 201 }
         );
-    } catch (error: any) {
+    } catch (error) {  // Type 'Error' instead of 'any'
         // Detailed error handling
         console.error("Error creating user:", error);
         
