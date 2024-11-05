@@ -18,7 +18,7 @@ const userSchema = new mongooes.Schema({
         required: [true, 'Please provide a password'],
         select: false 
     },
-    isVerfied: {
+    isVerified: {
         type: Boolean,
         default: false
     },

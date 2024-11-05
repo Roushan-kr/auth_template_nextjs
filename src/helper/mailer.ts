@@ -19,7 +19,7 @@ const emailType = {
 
 type EmailReason = "verify" | "reset";
 
-export const sandEmail = async ({
+export const sendEmail = async ({
   userId,
   email,
   reson,

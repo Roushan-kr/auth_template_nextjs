@@ -3,15 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { User } from "@/models/userModel";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { sandEmail } from "@/helper/mailer";
-
-
+import { sendEmail } from "@/helper/mailer";
 
 connect();
 
+interface LoginRequestBody {
+  email: string;
+  password: string;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body: LoginRequestBody = await req.json(); // Type annotation for request body
     const { email, password } = body;
 
     if (!email || !password) {
@@ -22,9 +25,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if user already exists
-    const userExists = await User.findOne({ email }).select(
-      "+password"
-    );
+    const userExists = await User.findOne({ email }).select("+password");
 
     if (!userExists) {
       return NextResponse.json(
@@ -32,15 +33,21 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    // check if mail is verify or not
-    if(!userExists.isVerfied){
-      sandEmail({userId: userExists._id, email: userExists.email, reson: "verify"});
-      
+
+    // Check if email is verified
+    if (!userExists.isVerified) {
+      sendEmail({
+        userId: userExists._id,
+        email: userExists.email,
+        reason: "verify", // Fixed typo here from `reson` to `reason`
+      });
+
       return NextResponse.json(
-        { error: "Your need to verify your mail befor login"},
+        { error: "You need to verify your email before login" },
         { status: 400 }
       );
     }
+
     // Compare password
     const isMatch = await bcryptjs.compare(password, userExists.password);
 
@@ -51,16 +58,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Remove password from user object
+    // Remove password from user object before returning to client
     delete userExists.password;
 
-    // creating token
+    // Creating token
     const tokenData = {
       id: userExists._id,
       email: userExists.email,
     };
 
-    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, {
+    if (!process.env.TOKEN_SECRET) {
+      throw new Error("Token secret is not defined in the environment variables.");
+    }
+
+    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET, {
       expiresIn: "1h",
     });
 
@@ -70,14 +81,18 @@ export async function POST(req: NextRequest) {
       success: true,
     });
 
+    // Set the token as a cookie
     response.cookies.set("token", token, {
-      expires: new Date(Date.now() + 3600000),
+      expires: new Date(Date.now() + 3600000), // 1 hour expiration
       httpOnly: true,
     });
 
     return response;
-  } catch (error: any) {
-    console.log(error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error); // Log the actual error for debugging
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: "An unknown error occurred" }, { status: 500 });
   }
 }

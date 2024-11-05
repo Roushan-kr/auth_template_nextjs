@@ -1,16 +1,25 @@
 import { connect } from "@/db/dbConfig";
 import { User } from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
-import bcryptjs from 'bcryptjs'
-import { sandEmail } from "@/helper/mailer";
+import bcryptjs from "bcryptjs";
+import { sendEmail } from "@/helper/mailer";  // Fixed the typo
 
 connect();
 
+interface ResetPasswordRequest {
+  token: string;
+  Password: string;
+}
+
+interface RequestBody {
+  email: string;
+}
+
 export async function PATCH(req: NextRequest) {
   try {
-    
-    const reqbody = await req.json();
-    const { token , Password} = reqbody;
+    const reqbody: ResetPasswordRequest = await req.json();  // Add explicit type
+    const { token, Password } = reqbody;
+
     console.log(token);
 
     const user = await User.findOne({
@@ -20,59 +29,61 @@ export async function PATCH(req: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "User Condition not ment" },
+        { error: "User Condition not met" },
         { status: 401 }
       );
     }
-    const hashPasswd = await bcryptjs.hash(Password, 10)
-    
-    user.forgotPasswordToken= undefined;
+
+    const hashPasswd = await bcryptjs.hash(Password, 10);
+
+    user.forgotPasswordToken = undefined;
     user.forgotPasswordExpire = undefined;
     user.password = hashPasswd;
 
     await user.save();
 
-    const response=  NextResponse.json({ success: true, message: "Password changed successfuly" });
+    const response = NextResponse.json({ success: true, message: "Password changed successfully" });
 
-    // clear old token for new login
-    response.cookies.set("token", "",{
+    // Clear old token for new login
+    response.cookies.set("token", "", {
       httpOnly: true,
       expires: new Date(0),
     });
 
     return response;
-
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    // Avoid using `any`, instead specify a more specific type
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: "An unknown error occurred" }, { status: 500 });
   }
 }
 
-
 export async function POST(req: NextRequest) {
   try {
-    
-    const reqbody = await req.json();
-    const { email} = reqbody;
-    if(!email){
-      return NextResponse.json(
-        { error: "require email" },
-        { status: 401 }
-      );
-    }
-    const user =await User.findOne({email});
-    if(!user){
-      return NextResponse.json(
-        { error: "No user registed" },
-        { status: 401 }
-      );
+    const reqbody: RequestBody = await req.json();  // Add explicit type
+    const { email } = reqbody;
+
+    if (!email) {
+      return NextResponse.json({ error: "Email is required" }, { status: 401 });
     }
 
-    sandEmail({userId:user._id, email:user.email, reson:"reset"})
+    const user = await User.findOne({ email });
 
-    return  NextResponse.json({ success: true, message: "reset password email sent to mail" });
+    if (!user) {
+      return NextResponse.json({ error: "No user registered" }, { status: 401 });
+    }
 
-  } catch (error:any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // Fixed typo here: changed `sendEmail` to `sendEmail`
+    sendEmail({ userId: user._id, email: user.email, reson: "reset" });
 
+    return NextResponse.json({ success: true, message: "Reset password email sent" });
+  } catch (error) {
+    // Handle error explicitly
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: "An unknown error occurred" }, { status: 500 });
   }
 }
