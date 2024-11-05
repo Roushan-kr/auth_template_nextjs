@@ -1,6 +1,7 @@
 import { User } from "@/models/userModel";
 import nodemailer from "nodemailer";
 import bcryptjs from "bcryptjs";
+import { getEmailVerificationTemplate, getPasswordResetTemplate } from "./template/sample";
 
 const transport = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
@@ -12,14 +13,8 @@ const transport = nodemailer.createTransport({
 });
 
 const emailType = {
-  verify: {
-    subject: "Welcome to our platform, please verify your email",
-    text: "Please verify your email by clicking the following link: \n\n",
-  },
-  reset: {
-    subject: "Password reset",
-    text: "You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n",
-  },
+  verify: getEmailVerificationTemplate,
+  reset: getPasswordResetTemplate
 };
 
 type EmailReason = "verify" | "reset";
@@ -51,15 +46,15 @@ export const sandEmail = async ({
     }
     await user.save();
 
-    const { subject, text } = emailType[reson];
+    const link = `${process.env.DOMAIN}/auth/${reson}?token=${hasedToken}`
 
-    const link = `<a href="${process.env.DOMAIN}/auth/${reson}?token=${hasedToken}">Click here</a> or copy and paste the following link in your browser: ${process.env.DOMAIN}/auth/${reson}?token=${hasedToken}`;
+    const { subject, html } = emailType[reson](link);
 
     const mailOptions = {
       from: "admin@gmail.com",
       to: email,
       subject: subject,
-      html: text + link,
+      html: html,
     };
 
     const mailRes = await transport.sendMail(mailOptions);
