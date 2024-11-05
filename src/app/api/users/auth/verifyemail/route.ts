@@ -27,8 +27,10 @@ export async function POST(req: NextRequest) {
     user.verifyExpire = undefined;
     await user.save();
 
-    return NextResponse.json({ success: true, message: "Email verified" });
+    const res = NextResponse.json({ success: true, message: "Email verified" });
+    res.cookies.set("token", "");
 
+    return res;
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
