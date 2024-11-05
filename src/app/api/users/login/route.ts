@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { User } from "@/models/userModel";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { sandEmail } from "@/helper/mailer";
+import { verify } from "crypto";
 
 
 connect();
@@ -32,6 +34,8 @@ export async function POST(req: NextRequest) {
     }
     // check if mail is verify or not
     if(!userExists.isVerfied){
+      sandEmail({userId: userExists._id, email: userExists.email, reson: "verify"});
+      
       return NextResponse.json(
         { error: "Your need to verify your mail befor login"},
         { status: 400 }
