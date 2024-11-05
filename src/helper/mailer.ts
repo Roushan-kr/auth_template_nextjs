@@ -22,11 +22,11 @@ type EmailReason = "verify" | "reset";
 export const sendEmail = async ({
   userId,
   email,
-  reson,
+  reason,
 }: {
   userId: string;
   email: string;
-  reson: EmailReason;
+  reason: EmailReason;
 }) => {
   try {
     const user = await User.findById(userId);
@@ -37,18 +37,18 @@ export const sendEmail = async ({
 
     const hasedToken = await bcryptjs.hash(userId.toString(), 10);
 
-    if (reson === "reset") {
+    if (reason === "reset") {
       user.forgotPasswordToken = hasedToken;
       user.forgotPasswordExpire = Date.now() + 3600000;
-    } else if (reson === "verify") {
+    } else if (reason === "verify") {
       user.verifyToken = hasedToken;
       user.verifyExpire = Date.now() + 3600000;
     }
     await user.save();
 
-    const link = `${process.env.DOMAIN}/auth/${reson}?token=${hasedToken}`
+    const link = `${process.env.DOMAIN}/auth/${reason}?token=${hasedToken}`
 
-    const { subject, html } = emailType[reson](link);
+    const { subject, html } = emailType[reason](link);
 
     const mailOptions = {
       from: "admin@gmail.com",

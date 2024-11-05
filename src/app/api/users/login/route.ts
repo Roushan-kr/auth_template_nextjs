@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       sendEmail({
         userId: userExists._id,
         email: userExists.email,
-        reason: "verify", // Fixed typo here from `reson` to `reason`
+        reason: "verify", // Fixed typo here from `reason` to `reason`
       });
 
       return NextResponse.json(

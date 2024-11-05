@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Fixed typo here: changed `sendEmail` to `sendEmail`
-    sendEmail({ userId: user._id, email: user.email, reson: "reset" });
+    sendEmail({ userId: user._id, email: user.email, reason: "reset" });
 
     return NextResponse.json({ success: true, message: "Reset password email sent" });
   } catch (error) {
