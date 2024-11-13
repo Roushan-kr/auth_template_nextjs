@@ -163,7 +163,7 @@ function Login() {
                 {loading ? "Processing" : "Login Now"}
               </button>
               <p className="text-sm text-white mt-8">
-                Don't have an account?
+                Don`&apos;`t have an account?
                 <Link
                   href="/signup"
                   className="text-yellow-400 font-semibold hover:underline ml-1"
