@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
+import {  useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 function Login() {
   const [user, setUser] = useState({
@@ -15,6 +16,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(true);
   const [showPassword, setShowPassword] = useState(false); // State for password visibility toggle
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const router = useRouter();
 
@@ -24,8 +26,19 @@ function Login() {
 
   const onLogin = async () => {
     try {
+      if (!executeRecaptcha) {
+        toast.error("reCAPTCHA not ready");
+        return;
+      }
+      const recaptchaToken = await executeRecaptcha("login");
+      if (!recaptchaToken) {
+        toast.error("reCAPTCHA validation failed");
+        return;
+      }
+
       setLoading(true);
-      const response = await axios.post("/api/users/login", user);
+      const userWithRecaptcha = { ...user, recaptchaToken };
+      const response = await axios.post("/api/users/login", userWithRecaptcha);
       if (response.data.success) {
         toast.success(response.data.message);
         router.push("/profile");
@@ -53,7 +66,8 @@ function Login() {
         toast.success(response.data.message);
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error || "Unable to reset password";
+      const errorMessage =
+        error.response?.data?.error || "Unable to reset password";
       toast.error(errorMessage);
       console.error(error);
     } finally {
@@ -79,7 +93,9 @@ function Login() {
         <div className="flex items-center md:p-8 p-6 bg-[#0C172C] h-full lg:w-11/12 lg:ml-auto">
           <form className="max-w-lg w-full mx-auto">
             <div className="mb-12">
-              <h3 className="text-3xl font-bold text-yellow-400">Login to account</h3>
+              <h3 className="text-3xl font-bold text-yellow-400">
+                Login to account
+              </h3>
             </div>
             <div className="mt-8">
               <label className="text-white text-xs block mb-2">Email</label>
@@ -107,7 +123,10 @@ function Login() {
                       <path d="M0 512h512V0H0Z" data-original="#000000"></path>
                     </clipPath>
                   </defs>
-                  <g clipPath="url(#a)" transform="matrix(1.33 0 0 -1.33 0 682.667)">
+                  <g
+                    clipPath="url(#a)"
+                    transform="matrix(1.33 0 0 -1.33 0 682.667)"
+                  >
                     <path
                       fill="none"
                       strokeMiterlimit="10"
@@ -153,6 +172,8 @@ function Login() {
               </div>
             </div>
             <div className="mt-12">
+              
+
               <button
                 type="button"
                 className="w-max shadow-xl py-3 px-6 text-sm text-gray-800 font-semibold rounded-md bg-transparent bg-yellow-400 

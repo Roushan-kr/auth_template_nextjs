@@ -4,18 +4,34 @@ import { User } from "@/models/userModel";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "@/helper/mailer";
+import axios from "axios";
 
 connect();
 
 interface LoginRequestBody {
   email: string;
   password: string;
+  recaptchaToken: string;
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body: LoginRequestBody = await req.json(); // Type annotation for request body
-    const { email, password } = body;
+    const { email, password, recaptchaToken } = body;
+    const key = process.env.RECAPTCHA_SECRET_KEY;
+
+    const res = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${key}&response=${recaptchaToken}`
+    );
+    // console.log(res);
+    const data = await res.data;
+
+    if (!data.success && data.score < 0.5) {
+      return NextResponse.json(
+        { error: "reCAPTCHA validation failed" },
+        { status: 400 }
+      );
+    }
 
     if (!email || !password) {
       return NextResponse.json(
@@ -68,7 +84,9 @@ export async function POST(req: NextRequest) {
     };
 
     if (!process.env.TOKEN_SECRET) {
-      throw new Error("Token secret is not defined in the environment variables.");
+      throw new Error(
+        "Token secret is not defined in the environment variables."
+      );
     }
 
     const token = jwt.sign(tokenData, process.env.TOKEN_SECRET, {
@@ -93,6 +111,9 @@ export async function POST(req: NextRequest) {
       console.error(error); // Log the actual error for debugging
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-    return NextResponse.json({ error: "An unknown error occurred" }, { status: 500 });
+    return NextResponse.json(
+      { error: "An unknown error occurred" },
+      { status: 500 }
+    );
   }
 }
