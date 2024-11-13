@@ -4,7 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-export default function VerifyUser({ params }: any) {
+export default function VerifyUser() {
   const [verify, setVerify] = useState<boolean | null>(null); // null for the initial loading state
 
   const verifyEmail = async (token: string) => {

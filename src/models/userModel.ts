@@ -1,5 +1,4 @@
 import mongooes from 'mongoose';
-import { unique } from 'next/dist/build/utils';
 
 const userSchema = new mongooes.Schema({
     username: {
