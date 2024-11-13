@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from 'react-hot-toast';
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 function Signup() {
   const [user, setUser] = useState({
@@ -15,13 +16,23 @@ function Signup() {
 
   const [loading, setLoading] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(true);
+  const { executeRecaptcha }= useGoogleReCaptcha();
 
   const router = useRouter();
 
   const onSignup = async () => {
+    if (!executeRecaptcha) {
+      toast.error("reCAPTCHA not ready");
+      return;
+    }
+    const recaptchaToken = await executeRecaptcha("signup");
+    if (!recaptchaToken) {
+      toast.error("reCAPTCHA validation failed");
+      return;
+    }
     setLoading(true);
     try {
-      const response = await axios.post("/api/users/signup", user);
+      const response = await axios.post("/api/users/signup", {...user, recaptchaToken});
       if (response.data.success) {
         toast.success(response.data.message);
         router.push("/login");

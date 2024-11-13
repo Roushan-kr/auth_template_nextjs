@@ -3,15 +3,29 @@ import { NextRequest, NextResponse } from 'next/server';
 import { User } from '@/models/userModel';
 import bcryptjs from 'bcryptjs';
 import { sendEmail } from '@/helper/mailer';
+import axios from 'axios';
 
 connect();
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { username, email, password } = body;
+        const { username, email, password, recaptchaToken } = body;
 
         // Validate input fields
+        if(!recaptchaToken) {
+            return NextResponse.json({ error: 'reCAPTCHA validation failed' }, { status: 400 });
+        }
+
+        const res = await axios.post(
+            `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
+        );
+        const data = await res.data;
+
+        if(data.success === false || data.score < 0.5) {
+            return NextResponse.json({ error: 'reCAPTCHA validation failed' }, { status: 400 });
+        }
+        
         if (!username || !email || !password) {
             return NextResponse.json({ error: 'Please fill all fields' }, { status: 400 });
         }
