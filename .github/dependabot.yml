@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: "npm" # Use "npm" for package.json and pnpm-lock.yaml
+    directory: "/" # Root directory where package.json is located
+    schedule:
+      interval: "weekly" # Check for updates every week
+    open-pull-requests-limit: 5 # Limit open PRs to avoid clutter
+    ignore:
+      - dependency-name: "next" # Optional: Prevent auto-updates for Next.js major versions
+    rebase-strategy: "auto" # Automatically rebase PRs if conflicts occur
