@@ -31,15 +31,23 @@ cp .env.example .env
 npm run dev
 ```
 
-## API Routes
+## Project Structure
 
-### Authentication
-- `POST /api/auth/login` – Login user.
-- `POST /api/auth/logout` – Logout user.
-- `POST /api/auth/register` – Register new user.
-- `POST /api/auth/verify-email` – Verify email using a one-time token.
-- `POST /api/auth/forgot-password` – Request password reset link.
-- `POST /api/auth/reset-password` – Reset password using a one-time token.
+```
+src/
+  ├── app/
+  ├── api/
+  │   ├── users/
+  │   ├── auth/
+  │   ├── reset/
+  │   ├── verify/
+  ├── components/
+  ├── fonts/
+  ├── login/
+  ├── profile/
+  ├── signup/
+  ├── globals.css
+```
 
 ## Sample Email Templates
 - check `src/helper/template`
