@@ -15,8 +15,8 @@ importers:
         specifier: ^9.0.7
         version: 9.0.7
       '@types/nodemailer':
-        specifier: ^6.4.16
-        version: 6.4.16
+        specifier: ^6.4.17
+        version: 6.4.17
       axios:
         specifier: ^1.7.7
         version: 1.7.7
@@ -33,8 +33,8 @@ importers:
         specifier: 15.0.0
         version: 15.0.0(react-dom@19.0.0-rc-65a56d0e-20241020(react@19.0.0-rc-65a56d0e-20241020))(react@19.0.0-rc-65a56d0e-20241020)
       nodemailer:
-        specifier: ^6.9.15
-        version: 6.9.15
+        specifier: ^6.10.0
+        version: 6.10.0
       react:
         specifier: 19.0.0-rc-65a56d0e-20241020
         version: 19.0.0-rc-65a56d0e-20241020
@@ -341,8 +341,8 @@ packages:
   '@types/node@20.16.14':
     resolution: {integrity: sha512-vtgGzjxLF7QT88qRHtXMzCWpAAmwonE7fwgVjFtXosUva2oSpnIEc3gNO9P7uIfOxKnii2f79/xtOnfreYtDaA==}
 
-  '@types/nodemailer@6.4.16':
-    resolution: {integrity: sha512-uz6hN6Pp0upXMcilM61CoKyjT7sskBoOWpptkjjJp8jIMlTdc3xG01U7proKkXzruMS4hS0zqtHNkNPFB20rKQ==}
+  '@types/nodemailer@6.4.17':
+    resolution: {integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==}
 
   '@types/prop-types@15.7.13':
     resolution: {integrity: sha512-hCZTSvwbzWGvhqxp/RqVqwU999pBf2vp7hzIjiYOsl8wqOmUxkQ6ddw1cV3l8811+kdUFus/q4d1Y3E3SyEifA==}
@@ -1364,8 +1364,8 @@ packages:
       sass:
         optional: true
 
-  nodemailer@6.9.15:
-    resolution: {integrity: sha512-AHf04ySLC6CIfuRtRiEYtGEXgRfa6INgWGluDhnxTZhHSKvrBu7lc1VVchQ0d8nPc4cFaZoPq8vkyNoZr0TpGQ==}
+  nodemailer@6.10.0:
+    resolution: {integrity: sha512-SQ3wZCExjeSatLE/HBaXS5vqUOQk6GtBdIIKxiFdmm01mOQZX/POJkO3SUX1wDiYcwUOJwT23scFSC9fY2H8IA==}
     engines: {node: '>=6.0.0'}
 
   normalize-path@3.0.0:
@@ -2090,7 +2090,7 @@ snapshots:
     dependencies:
       undici-types: 6.19.8
 
-  '@types/nodemailer@6.4.16':
+  '@types/nodemailer@6.4.17':
     dependencies:
       '@types/node': 20.16.14
 
@@ -3298,7 +3298,7 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  nodemailer@6.9.15: {}
+  nodemailer@6.10.0: {}
 
   normalize-path@3.0.0: {}
 
